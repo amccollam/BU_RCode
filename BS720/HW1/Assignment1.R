@@ -1,3 +1,107 @@
+#Andi McCollam
+#February 1, 2016
+#BS720
+#HW 1
+
+#Problem 1
+help("Seatbelts")
+#Seatbelts is a dataset which seems to be in R by default.  
+#It's a data set comparing UK automobile driver death rates before and after the introduction of mandatory seatbelt legislation.
+#The data set has 8 variables (columns)
+
+help("OrchardSprays")
+#OrchardSprays is another dataset available in R by default.
+#This data set analyzes an experiment run to determine honeybee repellant potency of different components of orchard sprays.
+#There are 64 observatinos across 4 variables.  This is stored as a data frame.
+
+#Problem 2
+#Searching for continuous variables in Seatbelts
+str(Seatbelts[,1])
+str(Seatbelts[,2])
+str(Seatbelts[,3])
+str(Seatbelts[,4])
+str(Seatbelts[,5])
+str(Seatbelts[,6])
+str(Seatbelts[,7])
+str(Seatbelts[,8])
+#All return data type of Time-Series
+
+Seatbelts
+#With the exception of categorical column law [,8], all colums appear to be continuous.
+
+#mean(Seatbelts[,1:7]) gave output of 2576.329 and appears to have given the mean of all values in all columns.
+#summary gives Mean, Median, Min, Max
+summary(Seatbelts[,1:7])
+
+#calculates standard deviations
+sd(Seatbelts[,1])
+sd(Seatbelts[,2])
+sd(Seatbelts[,3])
+sd(Seatbelts[,4])
+sd(Seatbelts[,5])
+sd(Seatbelts[,6])
+sd(Seatbelts[,7])
+
+#calculates variance
+var(Seatbelts[,1])
+var(Seatbelts[,2])
+var(Seatbelts[,3])
+var(Seatbelts[,4])
+var(Seatbelts[,5])
+var(Seatbelts[,6])
+var(Seatbelts[,7])
+
+#calculates range. range() function just gives min and max values
+max(Seatbelts[,1])-min(Seatbelts[,1])
+max(Seatbelts[,2])-min(Seatbelts[,2])
+max(Seatbelts[,3])-min(Seatbelts[,3])
+max(Seatbelts[,4])-min(Seatbelts[,4])
+max(Seatbelts[,5])-min(Seatbelts[,5])
+max(Seatbelts[,6])-min(Seatbelts[,6])
+max(Seatbelts[,7])-min(Seatbelts[,7])
+
+#Searching for continuous variables in OrchardSprays
+str(OrchardSprays[,1:4])
+OrchardSprays
+#decrease [,1] is the only continuous variable.  rowpos and colpos have data type num, but are categorical.
+mean(OrchardSprays$decrease)
+sd(OrchardSprays$decrease)
+var(OrchardSprays$decrease)
+min(OrchardSprays$decrease)
+max(OrchardSprays$decrease)
+median(OrchardSprays$decrease)
+max(OrchardSprays$decrease)-min(OrchardSprays$decrease)
+
+#Problem 3
+#create matricies
+a<-matrix(c(1,3,2,4),ncol=2)
+b<-matrix(c(1,-1),ncol=1)
+c<-matrix(c(1,5,3,7),ncol=2)
+
+#perform calculations
+(a+c)*4
+#     [,1] [,2]
+#[1,]    8   20
+#[2,]   32   44
+
+2*b
+#[,1]
+#[1,]    2
+#[2,]   -2
+
+#Problem 4
+#a) Attach 3rd row to a
+a<-rbind(a,5:6)
+
+#b) Attach a 3rd col to c
+c<-cbind(c,c(4,8))
+
+#c) Mean of 1st col of a
+mean(a[,1])
+#[1] 3
+
+
+
 #Intro to R class 1 code
 #note that the hashtag/pound symbol starts a line of comments
 #that will not run if you execute those lines
