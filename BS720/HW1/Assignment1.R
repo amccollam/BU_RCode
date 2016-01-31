@@ -92,9 +92,16 @@ c<-matrix(c(1,5,3,7),ncol=2)
 #Problem 4
 #a) Attach 3rd row to a
 a<-rbind(a,5:6)
+# [,1] [,2]
+# [1,]    1    2
+# [2,]    3    4
+# [3,]    5    6
 
 #b) Attach a 3rd col to c
 c<-cbind(c,c(4,8))
+# [,1] [,2] [,3]
+# [1,]    1    3    4
+# [2,]    5    7    8
 
 #c) Mean of 1st col of a
 mean(a[,1])
@@ -122,8 +129,7 @@ write.table(pulse, file = "pulse_new.txt", quote = FALSE, row.names=FALSE)
 #Problem 7
 #Create boxplots of Pulse1 and Pulse2 data
 help(boxplot)
-boxplot(pulse$Pulse1)
-boxplot(pulse$Pulse2)
+#plots attached in separate file appendix1.docx
 
 #Problem 8
 #Install epitools
