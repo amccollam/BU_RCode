@@ -100,198 +100,102 @@ c<-cbind(c,c(4,8))
 mean(a[,1])
 #[1] 3
 
-
-
-#Intro to R class 1 code
-#note that the hashtag/pound symbol starts a line of comments
-#that will not run if you execute those lines
-
-
-2+2
-
-# to quit, type q()
-
-
-
-#exercise 1
-
-# case 1 : 1+2
-2+2; 2*3; 2/5
-# case 2
-8/2-2*(2-3)
-# case 3: 
-3*5  * 4   /2
-
-
-
-
-
-#A note on machine precision
-1+1.110223e-16
-
-
-
-
-
-#exercise 2 
-x <- !(5>=3)
-y <- ((2^4) > (2*3))
-z<- x|y
-w <- x&y
-
-
-
-
-
-
-#Vectors
-x <- c(1.2, 2.3, 0.2, 1.1)
-length(x)
-
-
-x[c(2,3,4)]
-
-
-
-
-
-
-#exercise 3
-x <- c(1.2, 2.3, 0.2, 1.1)
-
-x[-1]
-x[2:4] 
-
-
-
-
-
-
-
-#Vector arithmetic 
-2*x+3
-x[c(FALSE, TRUE, TRUE, FALSE)]
-x[x>1]
-
-
-
-
-
-#Matrices
-x <- matrix(c(1,2,3,4,5,6), ncol=2)
-p<- matrix(c(1,2,3,4,5,6), nrow=2)
-
-
-cbind(c(1,2,3), c(4:6))
-rbind(c(1,4), c(2,5), c(3,6))
-
-
-
-
-#exercise 4
-x <- c(-3:3)
-y <- c(2, 5, -6, 3, -2, 10, -4)
-
-
-mean(z[1,])
-
-
-
-
-#Data Types
-k<-3
-k
-str(k)
-
-w <-"Homer" 
-w
-str(w)
-
-
-
-
-#Matrices vs. Data Frames
-matrix.1<- matrix(1:16,4,4)
-
-str(matrix.1)
-is.matrix(matrix.1)
-is.data.frame(matrix.1)
-
-
-data.1 <- as.data.frame(matrix.1)
-data.1
-str(data.1)
-
-
-
-object.size(matrix.1)
-object.size(data.1)
-
-
-
-
-airqual <- read.table("/Users/Avery/Desktop/airquality.txt")
-
-airqual <- read.csv("/Users/Avery/Desktop/airquality.csv")
-
-path<-file.choose()
-airqual2<-read.table(path)
-
-
-bod <- read.table("/Users/Avery/Desktop/BOD.txt", header=F)
-colnames(bod) <- c("Time","demand")
-
-
-
-cars1<-read.table("/Users/Avery/Desktop/cars.txt", header=FALSE)
-colnames(cars1) <- c("speed","dist")
-
-
-
-
-getwd() #the default working directory where files are read/written from/to
-
-setwd("/Users/Avery/Desktop")
-write.table(cars1, file="cars1.txt", quote=F, row.names=F)
-
-
-
-
-#datasets
-data()
-CO2
-
-CO2[,"Type"]
-CO2$Type
-CO2[,2]
-
-#all these three above commands give the same results
-
-
-#exercise
-
-mean(CO2$conc)
-mean(CO2[,4])
-
-mean(CO2$uptake)
-mean(CO2[,5])
-
-range(CO2$conc)
-mean(CO2[,4])
-
-range(CO2$uptake)
-range(CO2[,5])
-
-
-
-
-#Getting help
-?plot
-help.search("sort")
-??sort
-
-help(+) #this won't work!
-help("+")
-
-
-
+#Problem 5
+#Selecting csv from gui file structure prompt
+pulse<-read.csv(file.choose())
+#imported pulsedata.csv from downloads folder
+
+#Problem 6
+#a)Create pulse_diff vector
+pulse_diff<-pulse$Pulse2 - pulse$Pulse1
+
+#b)create bmi variable
+bmi<- (pulse$Weight)/((pulse$Height/100)^2)
+
+#c)attach pulse_diff and bmi to pulse
+pulse<-cbind(pulse,pulse_diff,bmi)
+
+#d)output as a text file
+write.table(pulse, file = "pulse_new.txt", quote = FALSE, row.names=FALSE)
+#pulse_new.txt was exported into wd
+
+#Problem 7
+#Create boxplots of Pulse1 and Pulse2 data
+help(boxplot)
+boxplot(pulse$Pulse1)
+boxplot(pulse$Pulse2)
+
+#Problem 8
+#Install epitools
+install.packages("epitools")
+
+#% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#Dload  Upload   Total   Spent    Left  Speed
+#0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 65  223k   65  146k    0     0   286k      0 --:--:-- --:--:-- --:--:--  285k100  223k  100  223k    0     0   345k      0 --:--:-- --:--:-- --:--:--  345k
+#
+#The downloaded binary packages are in
+#/var/folders/zf/s66prmks063_j9xm3cm_8cg80000gn/T//Rtmpyy3yjo/downloaded_packages
+
+#load epitools library
+library(epitools)
+
+#Problem 9
+#lookup ratetable example code
+help("ratetable")
+
+#Method 1, numbers
+#ratetable(bc0, py0, bc1, py1)
+
+method1<-ratetable(5, 7, 4, 55, 67, 21)
+method1
+# Outcome
+# Predictor  Cases Person-time
+# Exposed1     5          55
+# Exposed2     7          67
+# Exposed3     4          21
+
+#Method2, vector
+# dat <- c(bc0, py0, bc1, py1)
+# ratetable(dat)
+
+dat <- c(5,7,4,55,67,21)
+method2<-ratetable(dat)
+method2
+# Outcome
+# Predictor  Cases Person-time
+# Exposed1     5          55
+# Exposed2     7          67
+# Exposed3     4          21
+
+#Method3, vector
+# cases <- c(bc0, bc1)
+# pyears <- c(py0, py1)
+# ratetable(bc.cases = cases, person.years = pyears)
+
+cases <-c(5,7,4)
+pyears <- c(55,67,21)
+method3<-ratetable ("Number of Cases" = cases, Person_years=pyears)
+method3
+# Number of Cases Person_years
+# Exposed1               5           55
+# Exposed2               7           67
+# Exposed3               4           21
+
+#Method4, matrix
+##1 matrix
+# r238 <- matrix(c(41, 28010, 15, 19017), 2, 2)
+# dimnames(r238) <- list(c("BC cases", "Person-years"),
+#                        "Radiation" = c("Yes", "No"))
+# r238
+# r238b <- t(r238)
+# r238b
+# ratetable(r238b, rev = "r")
+
+exp_group <- matrix(c(5,7,4,55,67,21),nrow=3,ncol=2,dimnames = list("Exposed Group"=c("Unexposed","Minimal","Full"),c("Number of Cases","Person_years")))
+exp_group
+method4<-ratetable(exp_group)
+method4
+# Exposed Group Number of Cases Person_years
+# Unexposed               5           55
+# Minimal                 7           67
+# Full                    4           21
