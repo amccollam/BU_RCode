@@ -67,4 +67,11 @@ tapply(conc,Type,sd)
 tapply(uptake,Type,mean)
 tapply(uptake,Type,sd)
 
+pdf("TreatmentBar.pdf")
+Treatment.bar = table(Treatment)
+barplot(Treatment.bar)
+dev.off()
+
+
+
 
