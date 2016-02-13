@@ -50,6 +50,28 @@ newage <- function(age) {
 
 age_cat<-newage(age=age)
 
+ 
+# 2.
+# a. Read in the fram_heart dataset. (10pts)
+
+fram_heart<-read.csv(file.choose())
+
+#b Use conditional indexing to replace the missing values 
+# (999,-99,9) for the weight, height, diabetes and myocardial 
+# infarction variables with NA.  (Hint: this technique was done 
+# for the months in the airquality dataset in the inclasscode_3.R 
+# script. Replace missing values (99,-99,999) with NA.) (20pts)
+
+#First, ran descriptive statistics to get the feel of the data and 
+#double check the null values.
+summary(fram_heart[,1:13])
+stem(fram_heart$height)
+stem(fram_heart$weight)
+stem(fram_heart$mi)
+stem(fram_heart$dia)
+
+#Discovered that height null value is actually -9
+
 
 
 
