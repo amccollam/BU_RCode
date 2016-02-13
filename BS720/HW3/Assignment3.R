@@ -39,5 +39,18 @@ newage <- function(age) {
 
 
 
+# c)	Use the “newage” function on the age variable in the 
+# ageweight dataset to create the age_cat variable. (15pts)
+
+#"ordinary assignments done within the function are local 
+#and remporary adn are lost after exit from the function" 
+#(Venables,Smith,2015) 
+#That is, age_cat must be assigned outside of the function 
+#to become part of the working environment.
+
+age_cat<-newage(age=age)
+
+
+
 
 
