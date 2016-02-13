@@ -12,3 +12,32 @@ length(weight)
 
 #converted into data frame
 ageweight<-data.frame(age,weight)
+
+
+
+# a)	Create a new function called “newage” that creates 
+#a new variable called age_cat variable that is defined as 
+#follows:
+#   1 if age is 20 or less
+# 2 if 20<age≤50
+# 3 otherwise
+
+#this  will involve figuring out a nested ifelse, 
+#and then creating a new function
+#remember to use <=, >=
+#can use age<=20 in first ifelse, 
+#then stack a age <=50 on top
+#including a print() step at the end to check output.
+
+newage <- function(age) {
+        age_cat<- ifelse(age<=20,"1",
+                          ifelse(age<=50,"2","3"
+                                 )
+                         )
+        print(age_cat)
+}
+
+
+
+
+
