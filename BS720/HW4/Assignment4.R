@@ -52,7 +52,7 @@ var.test(crim~chas)
 wilcox.test(crim~chas)
 #Fail to reject H0 that means are the same.
 
-#just for funsies running the t-test despite violating assumptions
+#just for funsies running the t-test despite violating assumptions. Still fail to reject.
 t.test(crim~chas,var=T)
 
 # Two Sample t-test
@@ -66,3 +66,26 @@ t.test(crim~chas,var=T)
 #   mean in group 0 mean in group 1 
 # 3.744447        1.851670 
 
+
+
+# 3.	a) Create a new variable dis.cat that reflects the distance of the 
+# house from the 5 Boston employment centers as follows:
+#   “very close” if the weighted mean of distances (dis) 
+#     is less than 2.5 miles away
+#   “somewhat nearby” if the weighted mean of distances (dis) 
+#     is greater than or equal to 2.5 miles away but less than 5 miles away
+#   “far” if the weighted mean of distances (dis) 
+#     is greater than or equal to 5 miles way
+
+#dis = weighted mean fo distances to five Boston employment centers
+
+dis.label <- c("Very Close", "Somewhat Nearby", "Far")
+dis.break <- c(0,2.5,5,100)
+dis.cat   <- cut(dis, breaks=dis.break, labels = dis.label)
+
+table(dis.cat)
+
+#running data a different way to verify output
+dis.cat.check <- ifelse(dis<2.5,"Very Close",
+                        ifelse(dis<5,"Somewhat Nearby",
+                               "Far"))
