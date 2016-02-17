@@ -127,6 +127,49 @@ kruskal.test(medv~dis.cat)
 #If we had run ANOVA anyways
 dis.anova <- aov(medv~dis.cat)
 summary(dis.anova)
+#still rejected, but at lower confidence.
+
+# A school athletics program has taken a new instructor 
+# who has developed a new type of training program for 
+# the 100 meter dash.  The new instructor wants to test 
+# the effectiveness of the new training program by comparing 
+# the average times of 10 runners in the 100 meters.  Below 
+# are the 100 meter dash times in seconds before and after 
+# the implementation of the new training program for each athlete.
+# 
+# Before training: 12.9, 13.5, 12.8, 15.6, 17.2, 19.2, 12.6, 15.3, 14.4, 11.3
+# After training: 12.7, 13.6, 12.0, 15.2, 16.8, 20.0, 12.0, 15.9, 16.0, 11.1
+# 
+# 1.	Conduct the appropriate test (based on whether or not the 
+# assumptions are met) to determine if the new training program 
+# made a difference in running times for the 100 meters race.
+
+detach(Boston)
+
+before_time<-c(12.9, 13.5, 12.8, 15.6, 17.2, 19.2, 12.6, 15.3, 14.4, 11.3)
+after_time<-c(12.7, 13.6, 12.0, 15.2, 16.8, 20.0, 12.0, 15.9, 16.0, 11.1)
+
+summary(before_time)
+summary(after_time)
+
+par(mfrow=c(1,2))
+hist(before_time)
+hist(after_time)
+
+shapiro.test(before_time)
+shapiro.test(after_time)
+#distributions found to be normal
+
+var.test(before_time,after_time)
+#variances found to be equal
+
+#Using var.equal=T parameter, although it made no difference
+t.test(before_time,after_time,var.equal=T,paired=TRUE)
+#fail to reject H0
+
+
+
+
 
 
 
