@@ -89,3 +89,44 @@ table(dis.cat)
 dis.cat.check <- ifelse(dis<2.5,"Very Close",
                         ifelse(dis<5,"Somewhat Nearby",
                                "Far"))
+
+# b) Conduct the appropriate test (depending on whether or not the 
+# assumptions are met) to see if the value of owner-occupied homes 
+# ($1000s) is the same for each category of distance (“dis.cat”).
+
+#medv = median value of owner-occupied homes in $1000s
+
+#checking to make sure data structure is Factor
+str(dis.cat)
+
+#to test normality
+shapiro.test(medv[which(dis.cat=="Very Close")])
+shapiro.test(medv[which(dis.cat=="Somewhat Nearby")])
+shapiro.test(medv[which(dis.cat=="Far")])
+#all reject H0
+
+par(mfrow=c(1,3))
+hist(medv[which(dis.cat=="Very Close")],main="Close",xlab="Median Value")
+hist(medv[which(dis.cat=="Somewhat Nearby")],main="Nearby",xlab="Median Value")
+hist(medv[which(dis.cat=="Far")],main="Far",xlab="Median Value")
+
+
+
+#to check for equal variance across dis factors
+bartlett.test(medv~dis.cat)
+
+#Bartlett test indicates unequal variances.  Running boxplot to look.
+dev.off()
+boxplot(medv~dis.cat)
+
+
+#Assumptions of ANOVA are not met, must use 
+#nonparametric test, Kruskal-Wallis
+kruskal.test(medv~dis.cat)
+
+#If we had run ANOVA anyways
+dis.anova <- aov(medv~dis.cat)
+summary(dis.anova)
+
+
+
