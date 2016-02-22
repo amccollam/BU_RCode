@@ -25,3 +25,59 @@ dev.off()
 dev.off()
 png(filename="OzoneTemp_scatter.png")
 plot(Ozone~Temp, main="Ozone Against Temp",ylab="Ozone (ppb)",xlab="Temp (F)")
+
+
+# c) Compute the correlation between Ozone and Temp using both the 
+# Pearson and Spearman methods. Based on parts a and b, which measurement 
+# of correlation would you choose? Write a brief report of the results 
+# based on the method of correlation you feel is most appropriate. 
+
+cor.test(Temp, Ozone)
+cor.test(Temp, Ozone, method="spearman")
+
+
+# 1.	Thus far we have used the cor() and cor.test() functions to compute 
+# correlations in R; however, these functions will only compute pairwise 
+# correlations. In order to compute a correlation matrix for all specified 
+# variables in a dataset, one can use the rcorr function in the Hmisc package 
+# in R. 
+# 	a) Install the Hmisc package in R. 
+
+install.packages("Hmisc")
+
+#b) Call the Hmisc package in R using the library() command. 
+
+library(Hmisc)
+
+# c) Use the help function on the rcorr command to generate a correlation 
+# matrix for all variables in the airquality dataset (for the purposes of 
+# this question, just use the Pearson method). **Hint: you must coerce your 
+# data frame into a matrix for the function to work. 
+
+?rcorr
+
+#this doesn't work.  Need to figure out how to coerce into matrix.
+rcorr(matrix(airquality), type="pearson")
+
+# 1.	Create a linear regression model in R using the airquality dataset 
+# based on the following model: 
+#   𝑂𝑧𝑜𝑛𝑒! = 𝛽! + 𝛽! ∗𝑆𝑜𝑙𝑎𝑟! + 𝛽! ∗𝑊𝑖𝑛𝑑! + 𝛽! ∗𝑇𝑒𝑚𝑝! + 𝛽! ∗𝑀𝑜𝑛𝑡h! + 𝛽! ∗𝐷𝑎𝑦! + 𝜖! 
+# a) Write a report of your findings for the global null hypothesis 
+# and the main effects hypotheses (do not worry about any interaction terms). 
+
+
+
+
+# b) Test the assumptions of linearity, homoscedasticity and normality 
+# using the plots in R. Are all of the assumptions met? Please provide a 
+# full explanation for each assumption tested. 
+
+
+
+
+
+
+
+
+
+
