@@ -85,7 +85,7 @@ qqnorm(Day, main = "QQ-plot for Day of Month")
 qqline(Day)
 boxplot(Day, main="Boxplot of Day of Month")
 
-
+plot(Ozone_model, which=1:4)
 
 
 
