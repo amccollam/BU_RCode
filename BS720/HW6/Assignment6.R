@@ -33,6 +33,28 @@ table(saltegg.eat==1)
 length(saltegg.eat)
 
 
+# Test the null hypothesis the proportion of individuals who had 
+# gastrointestinal illness among those who ate a salted egg is the same as 
+# the proportion of individuals having gastrointestinal illness among those 
+# who did not eat a salted egg.
+
+#First, need to set up a 2x2 table of eggs and outcomes
+yesegg.cases = length(which(case ==1 & saltegg ==1))
+noegg.cases = length(which(case == 1 & saltegg==0))
+egg.cases = c(yesegg.cases, noegg.cases)
+yesegg.total = length(which(saltegg==1))
+noegg.total = length(which(saltegg==0))
+egg.total = c(yesegg.total, noegg.total)
+#Then, run ChiSq test of independence
+prop.test(egg.cases,egg.total)
+
+
+
+prop.test()
+
+
+
+
 
 
 
