@@ -55,24 +55,35 @@ library(Hmisc)
 # data frame into a matrix for the function to work. 
 
 ?rcorr
+airqual_matrix<-as.matrix(airquality)
+rcorr(airqual_matrix, type=c("pearson"))
 
-#this doesn't work.  Need to figure out how to coerce into matrix.
-rcorr(matrix(airquality), type="pearson")
+# d) Summarize which variables have a significant correlation and whether 
+# they are positively or negatively correlated with each other. 
+
+
+
 
 # 1.	Create a linear regression model in R using the airquality dataset 
 # based on the following model: 
 #   𝑂𝑧𝑜𝑛𝑒! = 𝛽! + 𝛽! ∗𝑆𝑜𝑙𝑎𝑟! + 𝛽! ∗𝑊𝑖𝑛𝑑! + 𝛽! ∗𝑇𝑒𝑚𝑝! + 𝛽! ∗𝑀𝑜𝑛𝑡h! + 𝛽! ∗𝐷𝑎𝑦! + 𝜖! 
-# a) Write a report of your findings for the global null hypothesis 
-# and the main effects hypotheses (do not worry about any interaction terms). 
 
-
+attach(airquality)
+Ozone_model<-lm(Ozone~Solar.R+Wind+Temp+Month+Day, data=airquality)
+summary(Ozone_model)
 
 
 # b) Test the assumptions of linearity, homoscedasticity and normality 
 # using the plots in R. Are all of the assumptions met? Please provide a 
 # full explanation for each assumption tested. 
 
-
+#Running residual plots
+par(mfrow=c(2,2))
+plot(Day)
+hist(Day, main= "Day of Month")
+qqnorm(Day, main = "QQ-plot for Day of Month")
+qqline(Day)
+boxplot(Day, main="Boxplot of Day of Month")
 
 
 
