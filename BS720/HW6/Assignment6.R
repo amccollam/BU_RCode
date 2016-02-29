@@ -48,9 +48,49 @@ egg.total = c(yesegg.total, noegg.total)
 #Then, run ChiSq test of independence
 prop.test(egg.cases,egg.total)
 
+# a) Create a new variable called age.cat which is defined as follows: 
+#   1 if the age is less than 15, 
+# 2 if the age is greater than or equal to 15 and less than 25, and 
+# 3 if the age is greater than or equal to 25.
 
 
-prop.test()
+age_cat<-99
+age_cat[age<15]<-1
+age_cat[age>=15 & age<25]<-2
+age_cat[age>=25]<-3
+
+table(age_cat)
+
+
+#Making a table displaying vomiting by age.cat
+
+table(vomiting)
+age.vomiting<-ftable(vomiting~age_cat)
+prop.test(age.vomiting)
+
+# d) Test the null hypothesis that there is a linear 
+# increase/decrease (a trend) in the proportion of individuals who 
+# vomited as you increase/decrease age category.
+
+vomit.vector = tapply(vomiting, age_cat, sum)
+total.vector = tapply(vomiting, age_cat, length)
+
+prop.trend.test(vomit.vector,total.vector)
+
+# 5.a.a) Create a variable called symptom.sum that is defined as follows:
+# 0 if an individual only had none of the following symptoms: nausea, diarrhea, abdominal pain or vomiting
+# 1 if an individual only had one of the following symptoms: nausea, diarrhea, abdominal pain or vomiting
+# 2 if an individual had two of the following symptoms: nausea, diarrhea, abdominal pain or vomiting
+# 3 if an individual had three of the following symptoms: nausea, diarrhea, abdominal pain or vomiting
+# 4 if an individual had all four symptoms
+
+
+
+
+
+
+
+
 
 
 
