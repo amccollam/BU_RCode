@@ -84,7 +84,18 @@ prop.trend.test(vomit.vector,total.vector)
 # 3 if an individual had three of the following symptoms: nausea, diarrhea, abdominal pain or vomiting
 # 4 if an individual had all four symptoms
 
+symptom.sum=nausea+vomiting+abdpain+diarrhea
 
+# b) Test the null hypothesis that there is no association between 
+# age category (created in the 4th question) and the number of 
+# symptoms an individual experienced.
+
+
+
+
+
+riskratio(age_cat,symptom.sum)
+chisq.test(age_cat,symptom.sum)
 
 
 
