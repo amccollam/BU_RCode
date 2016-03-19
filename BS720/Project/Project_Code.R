@@ -79,6 +79,38 @@ WI       WV       WY
 [1] 16353.51
 
 
+#Trying to make awesome map
+> library(ggplot2)
+> install.packages("maps")
+> library("maps")
+
+ggplot(data,aes(fill=murder))+geom_map(aes(map_id=state),map=map)+expand_limits(x=map$long, y=map$lat);
+
+#To get this to work, I need to transform CovChg_means_MCC
+> CovChg_means_MCC<-as.data.frame(CovChg_means_MCC)
+
+#Now need to create a new row with state names since can't map off of row names, only values.
+> CovChg_means_MCC$state<-row.names(CovChg_means_MCC)
+> CovChg_means_MCC$charges<-CovChg_means_MCC$V1
+#need to use lowercase state names rather than abbreviations for 
+#mapping to work.
+#note - DC was not considered a state
+>CovChg_means_MCC$statename<-tolower(state.name[match(CovChg_means_MCC$state,state.abb)])
+
+#YESSSSSSS!!!!!!!
+> ggplot(CovChg_means_MCC,aes(fill=CovChg_means_MCC$charges))+geom_map(aes(map_id=CovChg_means_MCC$statename),map=map)+expand_limits(x=map$long, y=map$lat);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
