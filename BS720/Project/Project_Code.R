@@ -42,4 +42,47 @@ CovChg_means<-tapply(CovChg,Provider.State,mean)
 CovChg_means<-sort(CovChg_means,decreasing=TRUE)
 barplot(CovChg_means,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charge Amount for Inpatient AMI Treatment by State",ylab="Facility State",xlab="Average Charge")
 
+#For all DRGs
+> mean(IPPS$CovChg)
+[1] 35260.82
+> sd(IPPS$CovChg)
+[1] 23240.81
+
+#Made subset of MCC only for cleaner analysis
+> IPPS_MCC<-subset(IPPS,DRG.Definition=="280 - ACUTE MYOCARDIAL INFARCTION, DISCHARGED ALIVE W MCC")
+
+> detach(IPPS)
+> attach(IPPS_MCC)
+
+> tapply(CovChg,Provider.State,mean)
+AK       AL       AR       AZ       CA       CO       CT       DC 
+79674.45 42942.19 30499.54 53782.40 82123.22 56753.31 34285.45 59618.15 
+DE       FL       GA       HI       IA       ID       IL       IN 
+32491.66 58014.44 40009.14 40402.02 31095.33 27664.27 45789.06 34039.81 
+KS       KY       LA       MA       MD       ME       MI       MN 
+38761.49 32200.10 44942.87 23194.85 17692.27 23577.87 27855.81 32367.31 
+MO       MS       MT       NC       ND       NE       NH       NJ 
+40042.74 41994.60 27671.08 28746.18 23550.85 37428.97 30492.46 89859.87 
+NM       NV       NY       OH       OK       OR       PA       RI 
+47661.49 89514.62 39620.23 36821.64 41030.49 32733.51 48935.62 31690.53 
+SC       SD       TN       TX       UT       VA       VT       WA 
+42626.73 29524.27 38480.40 56750.65 29385.35 35343.33 24005.94 39658.97 
+WI       WV       WY 
+28618.87 25022.98 35610.38 
+
+
+> barplot(CovChg_means_MCC,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charges for Inpatient AMI with MCC by State",ylab="Facility State",xlab="Average Charge")
+
+> mean(CovChg_means_MCC)
+[1] 40443.13
+> sd(CovChg_means_MCC)
+[1] 16353.51
+
+
+
+
+
+
+
+
 
