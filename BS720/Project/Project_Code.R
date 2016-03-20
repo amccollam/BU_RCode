@@ -54,6 +54,7 @@ barplot(CovChg_means,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charge Amoun
 > detach(IPPS)
 > attach(IPPS_MCC)
 
+#include this table as an appendix.
 > tapply(CovChg,Provider.State,mean)
 AK       AL       AR       AZ       CA       CO       CT       DC 
 79674.45 42942.19 30499.54 53782.40 82123.22 56753.31 34285.45 59618.15 
@@ -158,13 +159,23 @@ as.data.frame(TukeyOutput)
 pairwise.t.test(IPPS_MCC$CovChg, IPPS_MCC$State.Vector, p.adj="bonferroni")
 
 
+#Ok, this isn't working.  Crosswalking everything into regions and working from there.
+#state.name function has region ability
+
+IPPS_MCC$Prov.Region <- state.region[match(IPPS_MCC$Provider.State,state.abb)]
+
+#Need to manually assign DC to "South"
+#Setting region info to Vector so name preserved for next steps
+IPPS_MCC$Prov.Region<-as.vector(IPPS_MCC$Prov.Region)
+#Creating a column of region names 
+DCMatrix<-ifelse(IPPS_MCC$State.Vector=="DC","South",IPPS_MCC$Prov.Region)
+#Replacing IPPS_MCC$Prov.Region with DCMatrix
+IPPS_MCC$Prov.Region<-DCMatrix
+
+#Used table to confirm that region counts still the same and visually checked data for accuracy.
 
 
-
-
-
-
-
+#Now that I have region data, running ANOVAs, etc.
 
 
 
