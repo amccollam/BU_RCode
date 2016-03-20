@@ -309,7 +309,30 @@ Kruskal-Wallis chi-squared = 206.62, df = 3, p-value <
 #Can repeat Wilcoxon tests to test equivalence between nonparametric means 
 #There are few enough to brute force - should I be fancy and use a loop?
 
+Regions<-c("Northeast_MMC$CovChg","Northcentral_MMC$CovChg","South_MMC$CovChg","West_MMC$CovChg")
+wilcox.test(South_MMC$CovChg,West_MMC$CovChg)
 
+i<-1
+j<-2
+repeat(
+  i < nrow(Regions)){
+  wilcox.test(Regions[i],Regions[j]);
+  i<-i+1;
+};
 
+#ok, loop not working. Brute forcing, looping if I have time.
+
+wilcox.test(Northeast_MMC$CovChg,Northcentral_MMC$CovChg)
+#p-value = 0.03255
+wilcox.test(Northeast_MMC$CovChg,South_MMC$CovChg)
+#p-value = 0.1168
+wilcox.test(Northeast_MMC$CovChg,West_MMC$CovChg)
+#p-value < 2.2e-16
+wilcox.test(Northcentral_MMC$CovChg,South_MMC$CovChg)
+#p-value = 4.734e-08
+wilcox.test(Northcentral_MMC$CovChg,West_MMC$CovChg)
+#p-value < 2.2e-16
+wilcox.test(South_MMC$CovChg,West_MMC$CovChg)
+#p-value < 2.2e-16
 
 
