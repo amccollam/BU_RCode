@@ -165,7 +165,7 @@ pairwise.t.test(IPPS_MCC$CovChg, IPPS_MCC$State.Vector, p.adj="bonferroni")
 IPPS_MCC$Prov.Region <- state.region[match(IPPS_MCC$Provider.State,state.abb)]
 
 #Need to manually assign DC to "South"
-#Setting region info to Vector so name preserved for next steps
+#Setting region info to Vector so region names preserved for next steps
 IPPS_MCC$Prov.Region<-as.vector(IPPS_MCC$Prov.Region)
 #Creating a column of region names 
 DCMatrix<-ifelse(IPPS_MCC$State.Vector=="DC","South",IPPS_MCC$Prov.Region)
@@ -176,6 +176,139 @@ IPPS_MCC$Prov.Region<-DCMatrix
 
 
 #Now that I have region data, running ANOVAs, etc.
+#It's probably manageable enough to test the assumptions now.
+
+#Running ANOVA first because I have the code
+ANOVA_region_MCC <- aov(IPPS_MCC$CovChg~IPPS_MCC$Prov.Region)
+ANOVA_region_MCC
+summary(ANOVA_region_MCC)
+
+Df    Sum Sq   Mean Sq F value Pr(>F)    
+IPPS_MCC$Prov.Region    3 1.827e+11 6.089e+10   92.97 <2e-16 ***
+  Residuals            1877 1.229e+12 6.549e+08                   
+---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+#Reject H0 that all regions have equal prices.
+
+#Ok, which regions are different from each other?
+#Making sure to use a correction to minimize Type1 errors
+#Using Tukey (lecture 4, p.21)
+
+TukeyOutput<-TukeyHSD(ANOVA_region_MCC)
+TukeyOutput
+
+Tukey multiple comparisons of means
+95% family-wise confidence level
+
+Fit: aov(formula = IPPS_MCC$CovChg ~ IPPS_MCC$Prov.Region)
+
+$`IPPS_MCC$Prov.Region`
+diff       lwr       upr     p adj
+Northeast-North Central 10342.205  5814.545 14869.864 0.0000000
+South-North Central      7299.611  3366.530 11232.692 0.0000117
+West-North Central      30897.767 26011.515 35784.020 0.0000000
+South-Northeast         -3042.594 -7152.791  1067.603 0.2268715
+West-Northeast          20555.563 15525.646 25585.479 0.0000000
+West-South              23598.157 19095.992 28100.321 0.0000000
+
+#The only regions which might even be the same are South and Northeast
+
+> tapply(IPPS_MCC$CovChg,IPPS_MCC$Prov.Region,mean)
+North Central     Northeast         South          West 
+35958.84      46301.04      43258.45      66856.60 
+> tapply(IPPS_MCC$CovChg,IPPS_MCC$Prov.Region,sd)
+North Central     Northeast         South          West 
+15605.85      33019.57      21470.67      34259.52 
+
+
+#Now that I've run the test, checking the assumptions of ANOVA.  This data is probably skew and not normally distributed.
+#Independent observations - SURE
+#Dependent variable is normal in each group....
+#Equal variance of dependent variable across groups
+#Running residual plots for each.
+#First, it's easier if I break out the data into the 4 regional categories.
+
+
+Northeast_MMC<-subset(IPPS_MCC,Prov.Region=="Northeast");
+Northcentral_MMC<-subset(IPPS_MCC,Prov.Region=="North Central");
+South_MMC<-subset(IPPS_MCC,Prov.Region=="South");
+West_MMC<-subset(IPPS_MCC,Prov.Region=="West");
+
+detach(South_MMC)
+attach(West_MMC)
+par(mfrow=c(2,2))
+plot(CovChg)
+hist(CovChg, main= "Number of rooms")
+qqnorm(CovChg, main = "QQ-plot for Number of Rooms")
+qqline(CovChg)
+boxplot(CovChg, main="Boxplot of Number of Rooms per dwelling")
+#Northeast, definitely left skew, not normal
+#Northcentral, less skew, but still left skew, not normal
+#South resembles Northcentral. Left skew, not normal
+#West is most normal looking, but still not.
+
+#Doing formal Shapiro tests, none are normally distributed at a high level of significance.
+> shapiro.test(Northeast_MMC$CovChg)
+
+Shapiro-Wilk normality test
+
+data:  Northeast_MMC$CovChg
+W = 0.83319, p-value < 2.2e-16
+
+> shapiro.test(Northcentral_MMC$CovChg)
+
+Shapiro-Wilk normality test
+
+data:  Northcentral_MMC$CovChg
+W = 0.92673, p-value = 4.258e-14
+
+> shapiro.test(South_MMC$CovChg)
+
+Shapiro-Wilk normality test
+
+data:  South_MMC$CovChg
+W = 0.92484, p-value < 2.2e-16
+
+> shapiro.test(West_MMC$CovChg)
+
+Shapiro-Wilk normality test
+
+data:  West_MMC$CovChg
+W = 0.9223, p-value = 1.999e-11
+
+#Checking for equal variance using Bartlett test
+bartlett.test(IPPS_MCC$CovChg~IPPS_MCC$Prov.Region)
+
+Bartlett test of homogeneity of variances
+
+data:  IPPS_MCC$CovChg by IPPS_MCC$Prov.Region
+Bartlett's K-squared = 327.29, df = 3, p-value < 2.2e-16
+
+#Reject H0 that the variability in charge amount is equal for all region categories.
+
+#In this case, we should really use a nonparametric alternative to ANOVA.
+#Running a Kruskal-Wallis Test
+kruskal.test(IPPS_MCC$CovChg~IPPS_MCC$Prov.Region)
+Error in kruskal.test.default(c(40237.34, 49635.9, 47468.55, 44164.29,  : 
+  all group levels must be finite
+
+#Test doesn't like the format of Prov.Region, so adding a new
+#column with Prov.Region as a factor:
+IPPS_MCC$Prov.Region.factor<-as.factor(Prov.Region)
+kruskal.test(IPPS_MCC$CovChg~IPPS_MCC$Prov.Region.factor)
+
+Kruskal-Wallis rank sum test
+
+data:  CovChg and Prov.Region.factor
+Kruskal-Wallis chi-squared = 206.62, df = 3, p-value <
+  2.2e-16
+
+#Prices are still not equal across regions.
+#There is no readily available non-parametric Tukey/Bonferroni alternative
+#Can repeat Wilcoxon tests to test equivalence between nonparametric means 
+#There are few enough to brute force - should I be fancy and use a loop?
+
 
 
 
