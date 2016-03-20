@@ -101,10 +101,61 @@ ggplot(data,aes(fill=murder))+geom_map(aes(map_id=state),map=map)+expand_limits(
 > ggplot(CovChg_means_MCC,aes(fill=CovChg_means_MCC$charges))+geom_map(aes(map_id=CovChg_means_MCC$statename),map=map)+expand_limits(x=map$long, y=map$lat);
 
 
+#Now I'm going to play with an ANOVA.  
+
+#First, checking for equivalence across 3 DRGs
+#No, wait. Remember I'm ONLY doing MCC now.
+
+#Running for all 50 states 
+#first, check the assumptions (which won't be met)
+#Independent observations - SURE
+#Dependent variable is normal in each group....
 
 
+#Equal variance of dependent variable across groups
 
 
+#Ok, having trouble checking the assumptions
+IPPS_MCC$State.Vector<-as.vector(IPPS_MCC$Provider.State)
+
+ANOVA_state_MCC <- aov(IPPS_MCC$CovChg~IPPS_MCC$State.Vector)
+
+> ANOVA_state_MCC
+Call:
+  aov(formula = IPPS_MCC$CovChg ~ IPPS_MCC$Provider.State)
+
+Terms:
+  IPPS_MCC$Provider.State    Residuals
+Sum of Squares             597484611506 814420277664
+Deg. of Freedom                      50         1830
+
+Residual standard error: 21095.93
+Estimated effects may be unbalanced
+
+
+summary(ANOVA_state_MCC)
+
+Df    Sum Sq   Mean Sq F value Pr(>F)    
+IPPS_MCC$Provider.State   50 5.975e+11 1.195e+10   26.85 <2e-16 ***
+  Residuals               1830 8.144e+11 4.450e+08                   
+---
+  Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+#They're DEFINITELY different
+
+#Ok, going to also see about comparing all states to each other
+#Since there are so many observations, I need to make a correction
+#in order to minimize Type1 errors (~2.5 will occur if I compare
+#means without correcting).
+#Using Tukey (lecture 4, p.21)
+
+TukeyOutput<-TukeyHSD(ANOVA_state_MCC)
+as.data.frame(TukeyOutput)
+#*laughs*  Well, that table's sure unreadable. 50! rows.
+#Bonferroni has better output layout at least, althogh it's more
+#conservative than Tukey
+
+pairwise.t.test(IPPS_MCC$CovChg, IPPS_MCC$State.Vector, p.adj="bonferroni")
 
 
 
