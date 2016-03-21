@@ -55,7 +55,7 @@ barplot(CovChg_means,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charge Amoun
 > attach(IPPS_MCC)
 
 #include this table as an appendix.
-> tapply(CovChg,Provider.State,mean)
+> MCC_barchart<-tapply(IPPS_MCC$CovChg,IPPS_MCC$Provider.State,mean)
 AK       AL       AR       AZ       CA       CO       CT       DC 
 79674.45 42942.19 30499.54 53782.40 82123.22 56753.31 34285.45 59618.15 
 DE       FL       GA       HI       IA       ID       IL       IN 
@@ -71,8 +71,21 @@ SC       SD       TN       TX       UT       VA       VT       WA
 WI       WV       WY 
 28618.87 25022.98 35610.38 
 
-
+MCC_barchart<-sort(MCC_barchart, decreasing=TRUE)
 > barplot(CovChg_means_MCC,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charges for Inpatient AMI with MCC by State",ylab="Facility State",xlab="Average Charge")
+
+#This sets the location of the column value labels
+Plotbars<-barplot(MCC_barchart,horiz=TRUE,cex.names=.6,cex.axis=.5,las=1,tck=1,xlim=c(0,100000),col=rainbow(51),main="Mean Charges for Inpatient AMI with MCC by State",ylab="Facility State",xlab="Average Charge")
+#This is the main plot
+barplot(MCC_barchart,horiz=TRUE,cex.names=.6,cex.axis=.6,las=1,tck=0.01,xlim=c(0,100000),col=rainbow(51),main="Mean Charges for Inpatient AMI with MCC by State",ylab="Facility State",xlab="Average Charge")
+#Places a mean value line
+abline(v=40443.13,par(lwd=2,lty=2))
+text(47000,60,"<- National Mean",cex=.6)
+#got rid of scientific notation on x-axis
+options(scipen=5)
+#displays values for each row
+text(y=Plotbars,x=MCC_barchart,label=round(MCC_barchart,digits=2), pos=4, cex=.6)
+
 
 > mean(CovChg_means_MCC)
 [1] 40443.13
