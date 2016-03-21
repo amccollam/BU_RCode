@@ -96,7 +96,10 @@ text(y=Plotbars,x=MCC_barchart,label=round(MCC_barchart,digits=2), pos=4, cex=.6
 #Trying to make awesome map
 > library(ggplot2)
 > install.packages("maps")
-> library("maps")
+> library(maps)
+> install.packages("RcolorBrewer")
+> library(RColorBrewer)
+
 
 ggplot(data,aes(fill=murder))+geom_map(aes(map_id=state),map=map)+expand_limits(x=map$long, y=map$lat);
 
@@ -113,6 +116,9 @@ ggplot(data,aes(fill=murder))+geom_map(aes(map_id=state),map=map)+expand_limits(
 
 #YESSSSSSS!!!!!!!
 > ggplot(CovChg_means_MCC,aes(fill=CovChg_means_MCC$charges))+geom_map(aes(map_id=CovChg_means_MCC$statename),map=map)+expand_limits(x=map$long, y=map$lat);
+
+#Prettier
+ggplot(CovChg_means_MCC,aes(fill=CovChg_means_MCC$charges))+geom_map(aes(map_id=CovChg_means_MCC$statename),map=map)+expand_limits(x=map$long, y=map$lat)+ggtitle("Average Covered Inpatient Charges for AMI by State")+theme(plot.title=element_text(size=20),axis.text.y=element_blank(),axis.text.x=element_blank(),legend.title=element_blank());
 
 
 #Now I'm going to play with an ANOVA.  
