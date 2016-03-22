@@ -48,7 +48,7 @@ barplot(CovChg_means,horiz=TRUE,cex.names=.4,las=2,tck=1,main="Mean Charge Amoun
 > sd(IPPS$CovChg)
 [1] 23240.81
 
-#Made subset of MCC only for cleaner analysis
+#Made subset of DRG280 only 
 > IPPS_MCC<-subset(IPPS,DRG.Definition=="280 - ACUTE MYOCARDIAL INFARCTION, DISCHARGED ALIVE W MCC")
 
 > detach(IPPS)
