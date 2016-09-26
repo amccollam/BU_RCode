@@ -66,7 +66,7 @@ legend("topright",c("Normal Density","Kernel Density"),fill=c("red","blue"))
 
 qqnorm(x)
 qqline(x)
-
+dev.off()
 
 
 
@@ -77,5 +77,74 @@ a.	Reduce the Titanic into a two-way table with Class as row variable, and other
 b.	Compute survival rate for each Age and Sex combination within each Class
 c.	Draw a bar plot with bars grouped by Class
 d.	Comment on if and how each factor affects survival rate for different factors.
+
+a.
+#Converting Titanic table into data frame to allow for easier manipulation.
+TitanicDF<-data.frame(Titanic)
+head(TitanicDF)
+
+#Class    Sex   Age Survived Freq
+#1   1st   Male Child       No    0
+#2   2nd   Male Child       No    0
+#3   3rd   Male Child       No   35
+#4  Crew   Male Child       No    0
+#5   1st Female Child       No    0
+#6   2nd Female Child       No    0
+
+#This creates a Matrix with Class as the row variable (byrow=F)
+#ncol=8 was used because the other columns in the data frame had 2^3=8 combinations.
+TitanicMatrix<-matrix(TitanicDF$Freq, ncol=8, byrow=F)
+TitanicMatrix
+
+#[,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+#[1,]    0    0  118    4    5    1   57  140
+#[2,]    0    0  154   13   11   13   14   80
+#[3,]   35   17  387   89   13   14   75   76
+#[4,]    0    0  670    3    0    0  192   20
+
+
+#Naming rows and columns to avoid confusion
+rownames(TitanicMatrix) <- unique(TitanicDF$Class)
+colnames(TitanicMatrix) <- unique(paste(TitanicDF$Sex,TitanicDF$Age,TitanicDF$Survived))
+TitanicMatrix
+
+#Male Child No Female Child No Male Adult No Female Adult No Male Child Yes Female Child Yes Male Adult Yes
+#1st              0               0           118               4              5                1             57
+#2nd              0               0           154              13             11               13             14
+#3rd             35              17           387              89             13               14             75
+#Crew             0               0           670               3              0                0            192
+#Female Adult Yes
+#1st               140
+#2nd                80
+#3rd                76
+#Crew               20
+
+
+b. 
+#Calculating element wise survival rates on matrix cells
+TitSurvivalRates <- TitanicMatrix[,c(5,6,7,8)]/(TitanicMatrix[,c(5,6,7,8)]+TitanicMatrix[,c(1,2,3,4)])
+TitSurvivalRates
+#setting to more meaningful names
+colnames(TitSurvivalRates)<-unique(paste(TitanicDF$Sex,TitanicDF$Age))
+
+#Male Child Female Child Male Adult Female Adult
+#1st   1.0000000    1.0000000 0.32571429    0.9722222
+#2nd   1.0000000    1.0000000 0.08333333    0.8602151
+#3rd   0.2708333    0.4516129 0.16233766    0.4606061
+#Crew        NaN          NaN 0.22273782    0.8695652
+
+#Crew col 1 and 2 are NaN because there were no children serving on crew. 0/0=NaN.
+
+
+c. 
+
+
+barplot(TitSurvivalRates
+        ,col=rainbow(4)
+        ,beside=T
+        ,ylab="Survival Rate"
+        ,main="Titanic Survival Rate by Class, Gender, and Age"
+        ,xlab="Gender and Age Category")
+legend("top",rownames(TitSurvivalRates),fill=c(rainbow(4)))
 
 
