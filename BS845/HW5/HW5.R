@@ -77,7 +77,135 @@ sample estimates:
 
 2.	Using R internal dataset infert, 
 a.	Produce a marginal 2-way table of education vs. case (case=1, infertility; case=0, otherwise)
+
+#exploring the data
+infert
+str(infert)
+'data.frame':	248 obs. of  8 variables:
+
+#converting to a table
+InfertTable<-table(infert$case,infert$education)
+InfertTable
+
+0-5yrs 6-11yrs 12+ yrs
+0      8      80      77
+1      4      40      39
+
+#verified data adds to 248
+
 i.	Compute row proportions, and comment on how percent of cases differs across different education group.
+
+#computed column proportions to check differences across education groups
+prop.table(InfertTable,2)
+
+0-5yrs   6-11yrs   12+ yrs
+0 0.6666667 0.6666667 0.6637931
+1 0.3333333 0.3333333 0.3362069
+
+#across all education levels, approximately 1/3 of people are identified as having infertility.
+
 ii.	Perform a test of whether infertility depends on education 
+
+The odds ratio below displays that we are over 95% confident that there is no relationship between infertility and education.
+
 iii.	Report odds ratio (OR) as a measure of the association and provide an interpretation of the OR.
+
+library("epitools", lib.loc="/Library/Frameworks/R.framework/Versions/3.2/Resources/library")
+#oddsratio function requires r x 2 dimension table. Rotating the table
+InfertTableOR<-table(infert$education,infert$case)
+
+oddsratio(InfertTableOR)
+
+$data
+
+0  1 Total
+0-5yrs    8  4    12
+6-11yrs  80 40   120
+12+ yrs  77 39   116
+Total   165 83   248
+
+$measure
+odds ratio with 95% C.I.
+estimate     lower    upper
+0-5yrs  1.0000000        NA       NA
+6-11yrs 0.9829708 0.2844553 4.010957
+12+ yrs 0.9956791 0.2875998 4.068890
+
+$p.value
+two-sided
+midp.exact fisher.exact chi.square
+0-5yrs          NA           NA         NA
+6-11yrs  0.9791352            1  1.0000000
+12+ yrs  0.9947485            1  0.9839929
+
+$correction
+[1] FALSE
+
+attr(,"method")
+[1] "median-unbiased estimate & mid-p exact CI"
+
+
+#using the 0-5 yrs group as the reference group, people with 6-11 yrs of education have .983 times the risk of infertility compared with 
+#people with 0-5 years of education with a 95% confidence interval of (0.284,4.011).  People with 12+ years of education have .996 times the 
+#risk of infertility than people with 0-5 years of education with a 95% confidence interval of (0.288,4.069).  Since both of these confidence
+#intervals contain the null value of 1.0, we fail to reject the null hypothesis that there is no difference in odds of infertility across
+#these groups.
+#Since one group has fewer than 5 observed values (education=1-5yrs, case=1), the Fisher exact values should be considered as well.
+
+fisher.test(InfertTableOR)
+
+Fisher's Exact Test for Count Data
+
+data:  InfertTableOR
+p-value = 1
+alternative hypothesis: two.sided
+
+#This test also fails to reject the null hypothesis that there is no difference in odds of infertility across education levels.
+
+
 b.	Repeat all the analyses in a. to study the relationship between induced and case.
+
+InducedCaseOR<-table(infert$induced,infert$case)
+InducedCaseOR
+
+  0  1
+0 96 47
+1 45 23
+2 24 13
+
+prop.table(InducedCaseOR,1)
+
+          0         1
+0 0.6713287 0.3286713
+1 0.6617647 0.3382353
+2 0.6486486 0.3513514
+
+oddsratio(InducedCaseOR)
+
+$data
+
+0  1 Total
+0      96 47   143
+1      45 23    68
+2      24 13    37
+Total 165 83   248
+
+$measure
+odds ratio with 95% C.I.
+estimate     lower    upper
+0 1.000000        NA       NA
+1 1.045600 0.5603142 1.923131
+2 1.110326 0.5047799 2.358710
+
+$p.value
+two-sided
+midp.exact fisher.exact chi.square
+0         NA           NA         NA
+1  0.8870238    1.0000000  0.8903248
+2  0.7894580    0.8457246  0.7942121
+
+$correction
+[1] FALSE
+
+attr(,"method")
+[1] "median-unbiased estimate & mid-p exact CI"
