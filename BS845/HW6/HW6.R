@@ -9,3 +9,5 @@ other variables in the dataset. Please carry out exploratory data analyses inclu
 normality check, correlation and t-tests to examine crude association. Fit a linear 
 model with model diagnosis and evaluate goodness of fit the model. Improve the model 
 based on diagnostic results. 
+
+ljhklj
