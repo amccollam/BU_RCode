@@ -63,6 +63,26 @@ summary(LMAdvance);
 
 
 
+#Forward stepwise regression
+comp_learn<-lm(rating~complaints+learning);
+comp_raises<-lm(rating~complaints+raises);
+comp_priv<-lm(rating~complaints+privileges);
+
+
+
+
+#testing to see which transformation Critical might benefit from:
+par(mfrow=c(2,2))
+plot(attitude$critical)
+hist(attitude$critical, main= "Critical")
+qqnorm(attitude$critical, main = "QQ-plot for Critical")
+qqline(attitude$critical)
+boxplot(attitude$critical, main="Critical")
+#critical is right skew.  Not bad otherwise.
+
+test<-glm(rating~complaints+learning+raises+privileges+critical+advance)
+
+comp_crit<-lm(rating~complaints+critical)
 
 
 
