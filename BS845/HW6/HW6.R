@@ -85,4 +85,14 @@ test<-glm(rating~complaints+learning+raises+privileges+critical+advance)
 comp_crit<-lm(rating~complaints+critical)
 
 
+install.packages("sandwich");library(sandwich)
+coeftest(comp_learn, vcov= vcovHC(m1))
+#didn't work with sandwich library
+install.packages("moments")
+library(moments)
+install.packages("lmtest")
+library(lmtest);
+library(MASS)
+
+
 
