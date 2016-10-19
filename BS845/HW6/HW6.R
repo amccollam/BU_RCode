@@ -94,5 +94,6 @@ install.packages("lmtest")
 library(lmtest);
 library(MASS)
 
-
+coeftest(comp_learn, vcov= vcovHC(m1))
+coeftest(comp_learn, vcov= vcovHC(m1,type="HC0"))
 
