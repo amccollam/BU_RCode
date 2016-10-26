@@ -80,7 +80,9 @@ Clearing out question 2 to undo what I've done to variable tax.
 > Boston$chas <- factor(Boston$chas);
 > Boston$rad <- factor(Boston$rad);
 > model1<-stepAIC(lm(medv ~ ., data=Boston),direction="both")
-
+> model4<-lm(medv ~ crim+zn+nox+rm+dis+rad+ptratio+black+lstat, data=Boston)
+> summary(model4)
+> anova(model4,model1)
 
 
 
