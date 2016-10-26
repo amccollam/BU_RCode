@@ -45,11 +45,43 @@ plot(model1)
 Perform effect estimation of all the pairwise comparisons between the quintiles intervals and hypothesis testing 
 of each  effect equal zero. Perform a global test of tax quintiles.
 
+#Break tax into quintiles
+Boston$tax<-cut(Boston$tax,breaks=quantile(Boston$tax,probs=seq(0,1,0.2)),include.lowest = T)
 
+#creating new linear model using tax quintiles. Caused tax to fall out of the model.
+model2<-stepAIC(lm(medv ~ ., data=Boston),direction="both")
+summary(model2)
+#This doesn't match model1, forcing in the other factors plus new tax factor
 
+attach(Boston)
+model2<-stepAIC(lm(medv ~ .+crim+zn+chas+nox+rm+dis+rad+tax+ptratio+black+lstat, data=Boston),direction="both")
+#This model removes tax factor too
 
+#Trying this:
+model3<-lm(medv ~ crim+zn+chas+nox+rm+dis+rad+tax+ptratio+black+lstat, data=Boston)
+#got it!
+
+install.packages("multcomp")
+library(multcomp)
+pairwise<-glht(model3,linfct=mcp(tax="Tukey"))
+summary(pairwise)
+
+K=rbind(c(0,-1,1,0,0,0,0,0,0,0,0),
+        c(0,-1,0,1,0,0,0,0,0,0,0),
+        c(0,-1,0,1,0,0,0,0,0,0,0),
+        c(0,0,-1,1))
 
 
 3.	Removing two least significant covariates from final model from 1. 
 Please compare the goodness of fit of new model with the final model from 1. 
 Comment on impact of removing the two covariates on the goodness of fit.
+
+Clearing out question 2 to undo what I've done to variable tax.
+> Boston$chas <- factor(Boston$chas);
+> Boston$rad <- factor(Boston$rad);
+> model1<-stepAIC(lm(medv ~ ., data=Boston),direction="both")
+
+
+
+
+
