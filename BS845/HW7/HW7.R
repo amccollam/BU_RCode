@@ -13,7 +13,7 @@ and location.
 
 
 Boston$chas <- factor(Boston$chas);
-Boston$rad <- factor(Boston$rad)
+Boston$rad <- factor(Boston$rad);
 str(Boston)
 
 1.	The goal is to identify characteristics that are associated with median housing value (medv). 
@@ -35,14 +35,20 @@ stepAIC(lm(medv ~ ., data=Boston),direction="backward");
 stepAIC(lm(medv ~ ., data=Boston),direction="both")
 
 model1<-stepAIC(lm(medv ~ ., data=Boston),direction="both")
-summary(model1)
+summary(model1);
 getDeltaRsquare(model1)
-
+par(mfrow=c(2,2));
+plot(model1)
 
 
 2.	With the final model from 1, replace tax by a new variable that are the intervals defined using its quintiles. 
 Perform effect estimation of all the pairwise comparisons between the quintiles intervals and hypothesis testing 
 of each  effect equal zero. Perform a global test of tax quintiles.
+
+
+
+
+
 
 3.	Removing two least significant covariates from final model from 1. 
 Please compare the goodness of fit of new model with the final model from 1. 
