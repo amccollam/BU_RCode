@@ -15,4 +15,12 @@ please report the odds ratio (OR) and 95% CI for all covariates.
 For SYSBP, report the OR per 10 units increase in the levels. 
 Please evaluate the importance of DIABETES on the predictive power of the final model. 
 
+fram <- read.csv("~/Dropbox/2016_Fall/BS845/fram.csv")
+attach(fram)
+CVD_fram<-subset(fram
+                 , fram$PERIOD==1
+                 , select = c(AGE,SEX,SYSBP,DIABP,CURSMOKE,BMI,DIABETES))
+
+
+
 
