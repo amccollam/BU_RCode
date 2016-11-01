@@ -105,3 +105,54 @@ stepAIC(CVD_allin, direction="backward")
 anova(CVD_allin)
 
 
+
+#Now let's try to get the ORs and CIs
+CVD_summ<-summary(CVD_allin)
+coefCI<-cbind(CVD_summ$coef
+              ,CVD_summ$coef[,1]-CVD_summ$coef[,2]*1.96
+              ,CVD_summ$coef[,1]+CVD_summ$coef[,2]*1.96)
+coefCI
+colnames(coefCI)[5:6]<-c("CI95LL","CI95UL")
+coefCI
+
+Estimate  Std. Error    z value     Pr(>|z|)       CI95LL      CI95UL
+(Intercept) -6.38736559 0.411012052 -15.540580 1.843084e-54 -7.192949211 -5.58178197
+AGE          0.05812301 0.004886924  11.893577 1.278135e-32  0.048544634  0.06770138
+SEX         -0.91974858 0.078259831 -11.752499 6.856092e-32 -1.073137848 -0.76635931
+SYSBP        0.01297855 0.002790196   4.651481 3.295593e-06  0.007509761  0.01844733
+DIABP        0.01081550 0.005000262   2.162987 3.054217e-02  0.001014989  0.02061602
+CURSMOKE     0.37903080 0.079549353   4.764725 1.891112e-06  0.223114072  0.53494754
+BMI          0.03284720 0.009622715   3.413507 6.413262e-04  0.013986680  0.05170772
+DIABETES     1.17687101 0.206258747   5.705799 1.157984e-08  0.772603867  1.58113815
+
+exp(coefCI[2,c(1,5,6)]);
+exp(coefCI[3,c(1,5,6)]);
+exp(coefCI[4,c(1,5,6)]*10);
+exp(coefCI[5,c(1,5,6)]);
+exp(coefCI[6,c(1,5,6)]);
+exp(coefCI[7,c(1,5,6)]);
+exp(coefCI[8,c(1,5,6)]);
+
+> exp(coefCI[2,c(1,5,6)]);
+Estimate   CI95LL   CI95UL 
+1.059845 1.049742 1.070046 
+> exp(coefCI[3,c(1,5,6)]);
+Estimate    CI95LL    CI95UL 
+0.3986192 0.3419339 0.4647018 
+> exp(coefCI[4,c(1,5,6)]*10);
+Estimate   CI95LL   CI95UL 
+1.138584 1.077989 1.202585 
+> exp(coefCI[5,c(1,5,6)]);
+Estimate   CI95LL   CI95UL 
+1.010874 1.001016 1.020830 
+> exp(coefCI[6,c(1,5,6)]);
+Estimate   CI95LL   CI95UL 
+1.460868 1.249963 1.707359 
+> exp(coefCI[7,c(1,5,6)]);
+Estimate   CI95LL   CI95UL 
+1.033393 1.014085 1.053068 
+> exp(coefCI[8,c(1,5,6)]);
+Estimate   CI95LL   CI95UL 
+3.244207 2.165397 4.860485 
+
+
