@@ -14,3 +14,5 @@ statistics as well as hypothesis testing. Make any needed improvement. For your 
 please report the odds ratio (OR) and 95% CI for all covariates. 
 For SYSBP, report the OR per 10 units increase in the levels. 
 Please evaluate the importance of DIABETES on the predictive power of the final model. 
+
+
