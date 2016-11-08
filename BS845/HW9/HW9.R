@@ -318,6 +318,7 @@ Parametric coefficients:
 R-sq.(adj) =  0.0509   Deviance explained =   23%
 -REML = 3222.6  Scale est. = 1         n = 5190
 
+<<<<<<< HEAD
 
 gam3<-gam(doctorco~sex+age+income+levyplus+freepoor+freerepa+illness+actdays+hscore+chcond1+chcond2,data=advisits,family = negbin(0.9302))
 summary(gam3)
@@ -356,22 +357,12 @@ UBRE = -0.41159  Scale est. = 1         n = 5190
 anova(modnb1,gam3)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 lm1<-lm(doctorco~.,data=advisits)
 
 
 anova(lm1,gam1)
+
+
 
 
 
