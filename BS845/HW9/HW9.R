@@ -188,7 +188,69 @@ Model:
 #Ok, Poisson model is complete I think.  
 plot(predict(modp2),residuals(modp2),xlab="Fitted",ylab="Residuals")
 halfnorm(residuals(modp2))
+
+phi<-sum(resid(modp2,type="pearson")^2)/df.residual(modp2)
+phi 
+[1] 1.325511
+#Indicates there is no major overdispersion
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Now for another model - Negative Binomial
+library("MASS", lib.loc="/Library/Frameworks/R.framework/Versions/3.3/Resources/library")
+modnb1<-glm.nb(doctorco~.,advisits);
+summary(modnb1);
+
+Call:
+  glm.nb(formula = doctorco ~ ., data = advisits, init.theta = 0.9301535861, 
+         link = log)
+
+Deviance Residuals: 
+  Min       1Q   Median       3Q      Max  
+-1.9630  -0.6355  -0.5279  -0.4411   4.0045  
+
+Coefficients:
+              Estimate Std. Error z value Pr(>|z|)    
+  (Intercept) -2.276138   0.122749 -18.543  < 2e-16 ***
+  sex          0.216333   0.069681   3.105  0.00191 ** 
+  age          0.331326   0.207755   1.595  0.11076    
+  income      -0.156214   0.103907  -1.503  0.13273    
+  levyplus     0.116379   0.085666   1.359  0.17430    
+  freepoor    -0.497256   0.210696  -2.360  0.01827 *  
+  freerepa     0.145683   0.115851   1.258  0.20857    
+  illness      0.214937   0.023521   9.138  < 2e-16 ***
+  actdays      0.143729   0.007305  19.674  < 2e-16 ***
+  hscore       0.037535   0.013609   2.758  0.00581 ** 
+  chcond1      0.097905   0.079153   1.237  0.21612    
+  chcond2      0.183473   0.103176   1.778  0.07536 .  
+---
+  Signif. codes:  0 ???***??? 0.001 ???**??? 0.01 ???*??? 0.05 ???.??? 0.1 ??? ??? 1
+
+(Dispersion parameter for Negative Binomial(0.9302) family taken to be 1)
+
+Null deviance: 3930.4  on 5189  degrees of freedom
+Residual deviance: 3029.8  on 5178  degrees of freedom
+AIC: 6423.7
+
+Number of Fisher Scoring iterations: 1
+
+
+Theta:  0.9302 
+Std. Err.:  0.0867 
+
+2 x log-likelihood:  -6397.6760 
   
+pchisq(3029.8,5178,lower.tail=F)
+[1] 1
+
+#Checking goodness of fit of negative binomial
+phiNB<-sum(resid(modnb1,type="pearson")^2)/df.residual(modnb1)
+phiNB
+[1] 1.000723
 
 
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#Negative Binomial model has much lower dispersion than Poisson.  This is the model with better goodness-of-fit.
+  
+  
   
