@@ -251,6 +251,130 @@ phiNB
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Negative Binomial model has much lower dispersion than Poisson.  This is the model with better goodness-of-fit.
-  
-  
-  
+#73-Check and model non-linearity for continuous covariates.
+
+library("gam", lib.loc="/Library/Frameworks/R.framework/Versions/3.3/Resources/library")
+library("mgcv", lib.loc="/Library/Frameworks/R.framework/Versions/3.3/Resources/library")
+
+gam1<-gam(doctorco~sex+age+income+levyplus+freepoor+freerepa+illness+actdays+hscore+chcond1+chcond2,data=advisits)
+summary(gam1)
+
+Family: gaussian 
+Link function: identity 
+
+Formula:
+  doctorco ~ sex + age + income + levyplus + freepoor + freerepa + 
+  illness + actdays + hscore + chcond1 + chcond2
+
+Parametric coefficients:
+  Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.036123   0.035803   1.009  0.31305    
+sex          0.033806   0.021602   1.565  0.11766    
+age          0.148433   0.066802   2.222  0.02633 *  
+  income      -0.055814   0.031154  -1.792  0.07326 .  
+levyplus     0.035238   0.024876   1.417  0.15668    
+freepoor    -0.103180   0.052457  -1.967  0.04924 *  
+  freerepa     0.032900   0.038071   0.864  0.38752    
+illness      0.059872   0.008339   7.180 7.96e-13 ***
+  actdays      0.103181   0.003656  28.221  < 2e-16 ***
+  hscore       0.017018   0.005180   3.285  0.00103 ** 
+  chcond1      0.004522   0.023716   0.191  0.84880    
+chcond2      0.042277   0.035528   1.190  0.23411    
+---
+  Signif. codes:  0 ???***??? 0.001 ???**??? 0.01 ???*??? 0.05 ???.??? 0.1 ??? ??? 1
+
+
+R-sq.(adj) =    0.2   Deviance explained = 20.2%
+GCV = 0.51071  Scale est. = 0.50953   n = 5190
+
+gam2<-gam(doctorco~sex+age+income+levyplus+freepoor+freerepa+illness+actdays+hscore+chcond1+chcond2,data=advisits,family = nb())
+summary(gam2)
+
+Family: Negative Binomial(0.913) 
+Link function: log 
+
+Formula:
+  doctorco ~ sex + age + income + levyplus + freepoor + freerepa + 
+  illness + actdays + hscore + chcond1 + chcond2
+
+Parametric coefficients:
+              Estimate Std. Error z value Pr(>|z|)    
+  (Intercept) -2.27801    0.12305 -18.513  < 2e-16 ***
+  sex          0.21671    0.06987   3.102  0.00192 ** 
+  age          0.33170    0.20833   1.592  0.11135    
+  income      -0.15612    0.10417  -1.499  0.13396    
+  levyplus     0.11664    0.08587   1.358  0.17438    
+  freepoor    -0.49793    0.21116  -2.358  0.01837 *  
+  freerepa     0.14662    0.11618   1.262  0.20694    
+  illness      0.21524    0.02360   9.122  < 2e-16 ***
+  actdays      0.14395    0.00734  19.610  < 2e-16 ***
+  hscore       0.03759    0.01366   2.752  0.00592 ** 
+  chcond1      0.09788    0.07934   1.234  0.21732    
+  chcond2      0.18388    0.10348   1.777  0.07556 .  
+---
+  Signif. codes:  0 ???***??? 0.001 ???**??? 0.01 ???*??? 0.05 ???.??? 0.1 ??? ??? 1
+
+
+R-sq.(adj) =  0.0509   Deviance explained =   23%
+-REML = 3222.6  Scale est. = 1         n = 5190
+
+
+gam3<-gam(doctorco~sex+age+income+levyplus+freepoor+freerepa+illness+actdays+hscore+chcond1+chcond2,data=advisits,family = negbin(0.9302))
+summary(gam3)
+
+Family: Negative Binomial(0.93) 
+Link function: log 
+
+Formula:
+  doctorco ~ sex + age + income + levyplus + freepoor + freerepa + 
+  illness + actdays + hscore + chcond1 + chcond2
+
+Parametric coefficients:
+          Estimate Std. Error z value Pr(>|z|)    
+  (Intercept) -2.276125   0.122748 -18.543  < 2e-16 ***
+  sex          0.216331   0.069681   3.105  0.00191 ** 
+  age          0.331322   0.207754   1.595  0.11076    
+  income      -0.156215   0.103906  -1.503  0.13273    
+  levyplus     0.116378   0.085665   1.359  0.17430    
+  freepoor    -0.497252   0.210694  -2.360  0.01827 *  
+  freerepa     0.145677   0.115850   1.257  0.20859    
+  illness      0.214935   0.023521   9.138  < 2e-16 ***
+  actdays      0.143727   0.007305  19.674  < 2e-16 ***
+  hscore       0.037535   0.013609   2.758  0.00581 ** 
+  chcond1      0.097907   0.079153   1.237  0.21611    
+  chcond2      0.183469   0.103176   1.778  0.07537 .  
+---
+  Signif. codes:  0 ???***??? 0.001 ???**??? 0.01 ???*??? 0.05 ???.??? 0.1 ??? ??? 1
+
+
+R-sq.(adj) =  0.0529   Deviance explained = 22.9%
+UBRE = -0.41159  Scale est. = 1         n = 5190
+
+
+
+
+anova(modnb1,gam3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lm1<-lm(doctorco~.,data=advisits)
+
+
+anova(lm1,gam1)
+
+
+
+
+
+
