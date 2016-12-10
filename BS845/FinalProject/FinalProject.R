@@ -41,5 +41,34 @@ hist(PDP_2010$AVE_PDE_PD_EQ_12, main="Average Prescriptions Filled per Beneficia
 #let's run a quick and dirty poisson to see what happens:
 str(PDP_2010)
 attach(PDP_2010)
-modp1<-glm(AVE_PDE_PD_EQ_12~., family=poisson, PDP_2010)
+write.table(PDP_2010, file="PDP_2010.csv",quote=F, sep=",", na="", row.names=F)
+modp1<-glm(AVE_PDE_PD_EQ_12~., family=poisson, data=PDP_2010)
+summary(modp1)
 #Hm.  glm isn't working with poisson because AVE_PDE_PD_EQ_12 is an average, not an integer.
+
+#Taking a moment to understand the number of full year beneficiaries
+#To get the mean and sd for the poisson, I'll need to take a weighted average.
+#First, creating a new column with total RX = full year PDP beneficiaries * avg Rx filled for year
+
+PDP_2010_WD<-PDP_2010
+PDP_2010_WD$TotRx<- (BENE_COUNT_PD_EQ_12 * AVE_PDE_PD_EQ_12)
+
+#Now dividing by the total number of beneficiaries to get pop mean of 39.55605
+PopAvgPDE<-sum(PDP_2010_WD$TotRx)/sum(PDP_2010_WD$BENE_COUNT_PD_EQ_12)
+
+
+#Ok...  now what?
+#Should I do something with the equation p(Y=k)=(e^-u*u^k)/k! where k=BENE_COUNT_PD_EQ_12?
+#Should I check predictor varaibles for colinearity?
+#Copying my 11/9 HW - got a 9.9/10 for the poisson I built there.  Output in plots.docx
+
+anova(modp1)
+drop1(modp1,test="Chisq")
+
+#The output is telling me to stop using benefit payment amounts for Part A, Part B svcs, and I agree this is a good idea.
+#All of these have Likelihood Ratio Test values of 0, which is I think what happens when R rounds from a really really low number (aka bad)
+#Building a second model excluding these.
+
+
+
+
