@@ -14,3 +14,5 @@ summary(PDNA)
 
 #NA rows are for people who don't have Part D at all it appears (or Part C as it happens)
 #This hits both genders, and all age categories
+#Need to remove NA from WholeYearCC_2010
+WholeYearCC_2010_WD<-subset(WholeYearCC_2010,AVE_PDE_PD_EQ_12>0)
