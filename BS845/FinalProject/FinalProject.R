@@ -68,7 +68,17 @@ drop1(modp1,test="Chisq")
 #The output is telling me to stop using benefit payment amounts for Part A, Part B svcs, and I agree this is a good idea.
 #All of these have Likelihood Ratio Test values of 0, which is I think what happens when R rounds from a really really low number (aka bad)
 #Building a second model excluding these.
+modp2<-glm(AVE_PDE_PD_EQ_12~BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD
+           +CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+           +CC_2_OR_MORE+DUAL_STUS+BENE_COUNT_PA_EQ_12+AVE_IP_ADM_PA_EQ_12+AVE_SNF_DAYS_PA_EQ_12
+           +BENE_COUNT_PB_EQ_12+AVE_CA_VST_PB_EQ_12+AVE_OP_VST_PB_EQ_12+BENE_COUNT_PC_EQ_12+BENE_COUNT_PD_EQ_12+AVE_PDE_CST_PD_EQ_12
+           , family=poisson
+           , data=PDP_2010);
+summary(modp2)
 
+drop1(modp2,test="Chisq")
+
+#This is still a terrible model.  Can I do forward stepwise?
 
 
 
