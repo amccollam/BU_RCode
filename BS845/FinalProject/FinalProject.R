@@ -16,3 +16,24 @@ summary(PDNA)
 #This hits both genders, and all age categories
 #Need to remove NA from WholeYearCC_2010
 WholeYearCC_2010_WD<-subset(WholeYearCC_2010,AVE_PDE_PD_EQ_12>0)
+summary(WholeYearCC_2010_WD)
+
+#Several comorbidities have 767 NA's out of 17466.  Checking to see if these are all suppressed in the same rows
+ComorbidNA<-subset(WholeYearCC_2010_WD,is.na(CC_ALZHDMTA))
+summary(ComorbidNA)
+
+#Yep - all 767 NA/suppressed CC_ALZHDMTA are also NA for CC_COPD, CC_DEPRESSN, CC_OSTEOPRS, CC_STRKETIA
+#They're also NA for BENE_COUNT_PC_EQ_12, but I think this is unrelated.
+#Removing these rows.  Conveniently, this gets rid of all NA comorbidity values.
+WholeYearCC_2010_WD2<-subset(WholeYearCC_2010_WD,!is.na(CC_ALZHDMTA))
+summary(WholeYearCC_2010_WD2)
+
+#Think data's clean now!  That was surprisingly painless (I hope).
+#Giving working data set an easier name and cleaning up a little.
+PDP_2010<-WholeYearCC_2010_WD2
+summary(PDP_2010)
+rm(ComorbidNA,PDNA,WholeYearCC_2010_WD2,WholeYearCC_2010_WD)
+detach()
+
+
+
