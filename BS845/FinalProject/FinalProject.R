@@ -35,5 +35,11 @@ summary(PDP_2010)
 rm(ComorbidNA,PDNA,WholeYearCC_2010_WD2,WholeYearCC_2010_WD)
 detach()
 
+hist(PDP_2010$AVE_PDE_PD_EQ_12, main="Average Prescriptions Filled per Beneficiary, 2010\nFull Year Part D Only", xlab="Average Prescriptions by Category")
 
 
+#let's run a quick and dirty poisson to see what happens:
+str(PDP_2010)
+attach(PDP_2010)
+modp1<-glm(AVE_PDE_PD_EQ_12~., family=poisson, PDP_2010)
+#Hm.  glm isn't working with poisson because AVE_PDE_PD_EQ_12 is an average, not an integer.
