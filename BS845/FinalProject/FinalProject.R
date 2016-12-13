@@ -184,4 +184,21 @@ abline(0,1,lty=2)
 #Why isn't this working?  Oh, fitted values for glm exclude NA by default.  This causes error in TotRxRound-fitted()
 #length(PDP_2010_WD$TotRxRound)=16699, length(fitted(mod_poisson2)) = 12043
 
+#Right!  I can use StepAIC now that I'm getting AICs!
+#then also consider doing add1() to complement drop1()
+mod_poisson3<-stepAIC(glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                            BENE_SEX_IDENT_CD+log(BENE_AGE_CAT_CD)+
+                            CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                            CC_2_OR_MORE+DUAL_STUS+
+                            log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                            log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)+log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
+                          ,family=poisson,data=PDP_2010_WD),direction="forward")
 
+#Maybe I should create a column with the sum of comorbidities...
+attach(PDP_2010_WD);
+PDP_2010_WD$TotComorbid<- (CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                             CC_2_OR_MORE+DUAL_STUS);
+detach()
+
+summary(lm(AVE_PDE_PD_EQ_12~TotComorbid), data=PDP_2010_WD)
+#Oh god, liner model with tot number of comorbidities done on a larf is *much* better.  Much much much.
