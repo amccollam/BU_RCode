@@ -200,7 +200,7 @@ PDP_2010_WD$TotComorbid<- (CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_D
                              CC_2_OR_MORE+DUAL_STUS);
 detach()
 
-summary(lm(AVE_PDE_PD_EQ_12~TotComorbid), data=PDP_2010_WD)
+mod_lm_totcomorbid<-lm((AVE_PDE_PD_EQ_12~TotComorbid), data=PDP_2010_WD)
 #Oh god, liner model with tot number of comorbidities done on a larf is *much* better.  Much much much.
 #Let's try it with the individual comorbidities
 mod_lm_comorbid<-lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
@@ -241,9 +241,89 @@ mod_quasipoisson_justvisit<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
 
 
 #Yeah, this is totally linear - giving up on poisson and finishing the analysis.
+#Running scatterplots against AVE_PDE_PD_EQ_12
+
+#demographics - being young and female leads to more Rx
+plot(PDP_2010_WD[c(1:2,33)],panel=panel.smooth)
+
+#comorbidities - all increase Rx except for Cancer and Stroke. Osteoporosis only a little bit
+#Cancer negatively correlates with alzheimers, stroke, and depression (surprising); CHF positively correlates wiht IschmCHT.
+plot(PDP_2010_WD[c(3:13,33)],panel=panel.smooth)
+
+#Other Medicare charge amounts- All positively correlate with Rx, some more htan others. 
+#Also, they all strongly correlate with each other, some more than others.
+plot(PDP_2010_WD[c("AVE_PA_PAY_PA_EQ_12","AVE_IP_PAY_PA_EQ_12","AVE_SNF_PAY_PA_EQ_12","AVE_OTH_PAY_PA_EQ_12"
+,"AVE_PB_PAY_PB_EQ_12","AVE_CA_PAY_PB_EQ_12","AVE_OP_PAY_PB_EQ_12","AVE_OTH_PAY_PB_EQ_12","AVE_PDE_PD_EQ_12")],panel=panel.smooth) 
+
+#Other Medicare visits - Average number of carrier/physician visits doesn't correlate with anything, really, including Rx count.
+#Everything else highly correlates.  Especially IP admission with SNF days, but that makes sense.
+plot(PDP_2010_WD[c("AVE_IP_ADM_PA_EQ_12","AVE_SNF_DAYS_PA_EQ_12","AVE_CA_VST_PB_EQ_12","AVE_OP_VST_PB_EQ_12","AVE_PDE_PD_EQ_12")],panel=panel.smooth)
+
+plot(PDP_2010_WD[c("CC_2_OR_MORE","DUAL_STUS","AVE_PDE_PD_EQ_12")],panel=panel.smooth)
+
+
+#Linear model all of the everything
+mod_linear2<-lm(AVE_PDE_PD_EQ_12~BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD+
+                    CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                    CC_2_OR_MORE+DUAL_STUS+
+                    AVE_PA_PAY_PA_EQ_12+AVE_IP_PAY_PA_EQ_12+AVE_SNF_PAY_PA_EQ_12+AVE_OTH_PAY_PA_EQ_12+AVE_IP_ADM_PA_EQ_12+AVE_SNF_DAYS_PA_EQ_12+
+                    AVE_PB_PAY_PB_EQ_12+AVE_CA_PAY_PB_EQ_12+AVE_OP_PAY_PB_EQ_12+AVE_OTH_PAY_PB_EQ_12+AVE_CA_VST_PB_EQ_12+AVE_OP_VST_PB_EQ_12,
+                  data=PDP_2010_WD)
+
+#Running stepAIC on it
+
+mod_linear2_step<-stepAIC(lm(AVE_PDE_PD_EQ_12~., data=PDP_2010),direction="both")
+mod_linear2_step$anova
+summary(mod_linear2_step)
+
+mod_linear2_step2<-stepAIC(lm(AVE_PDE_PD_EQ_12~BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD+
+                  CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                  CC_2_OR_MORE+DUAL_STUS+
+                  AVE_PA_PAY_PA_EQ_12+AVE_IP_PAY_PA_EQ_12+AVE_SNF_PAY_PA_EQ_12+AVE_OTH_PAY_PA_EQ_12+AVE_IP_ADM_PA_EQ_12+AVE_SNF_DAYS_PA_EQ_12+
+                  AVE_PB_PAY_PB_EQ_12+AVE_CA_PAY_PB_EQ_12+AVE_OP_PAY_PB_EQ_12+AVE_OTH_PAY_PB_EQ_12+AVE_CA_VST_PB_EQ_12+AVE_OP_VST_PB_EQ_12,
+                data=PDP_2010),direction = "both")
+summary(mod_linear2_step2)
+
+#apparently there's a command called getDeltaRsquare() which I forgot about in rockchalk packate
+getDeltaRsquare(mod_linear2_step2)
+getDeltaRsquare(mod_lm_comorbid)
+#everything is more influential on R2 in comorbid model.  I think linear2_step2 has too many predictors.
+
+#Getting rid of unwanted predictors.  
+#Unfortunately, -BENE_COUNT_PC_EQ_12 has null values and is breaking things when I try to take it out.
+mod_linear2_step3<-stepAIC(lm(AVE_PDE_PD_EQ_12~. -AVE_PDE_CST_PD_EQ_12 -BENE_COUNT_PD_EQ_12 -BENE_COUNT_PB_EQ_12 -BENE_COUNT_PA_EQ_12,
+                                data=PDP_2010, na.action=na.exclude),direction = "both")
 
 
 
+#Did my own forward stepwise, like this best of them due to R2=.8812 and Intercept error = .2344
+mod_lm_construct_best<-lm(AVE_PDE_PD_EQ_12~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_CHRNKIDN+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD)
+summary(mod_lm_construct_best)
+getDeltaRsquare(mod_lm_construct_best)
+plot(mod_lm_construct_best)
 
 
 
+#Now this is intesting...  took the exponential of the outcome and there are some strange effects
+#especially due to obs 3666 (173.5) and 8104 (174.7)
+#this following code is from Avery's lecture 5
+mod_lm_construct_exp<-lm(exp(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD)
+mod_lm_construct_exp.dffits<-dffits(mod_lm_construct_exp)
+mod_lm_construct_exp.hat<-hatvalues(mod_lm_construct_exp)
+id.mod_lm_construct_exp.dffits<-which(mod_lm_construct_exp.dffits>(2*sqrt((9+1)/16699)))
+influence.measures(mod_lm_construct_best)
+
+#Removed influential observations in Excel just to see if this is worth pursuing
+#it isn't
+mod_lm_construct_exp_nooutliers<-lm(exp(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_NoOutliers)
+mod_lm_construct_exp_nooutliers.dffits<-dffits(mod_lm_construct_exp_nooutliers)
+mod_lm_construct_exp_nooutliers.hat<-hatvalues(mod_lm_construct_exp_nooutliers)
+id.mod_lm_construct_exp_nooutliers.dffits<-which(mod_lm_construct_exp_nooutliers.dffits>(2*sqrt((9+1)/16699)))
+influence.measures(mod_lm_construct_best)
+
+
+#Output variable is moderately skewed (0.5-1.0) (Class 6)
+> skewness(AVE_PDE_PD_EQ_12)
+[1] 0.5777349
+> kurtosis(AVE_PDE_PD_EQ_12)
+[1] -0.1198344
