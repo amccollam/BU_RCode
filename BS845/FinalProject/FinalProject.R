@@ -202,3 +202,23 @@ detach()
 
 summary(lm(AVE_PDE_PD_EQ_12~TotComorbid), data=PDP_2010_WD)
 #Oh god, liner model with tot number of comorbidities done on a larf is *much* better.  Much much much.
+#Let's try it with the individual comorbidities
+mod_lm_comorbid<-lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+                    ,data=PDP_2010_WD)
+
+#Cancer is negatively correlated, the others are positively correlated.
+#The individual comorbidities which seem to lead to the most prescriptions are Depression, Diabetes, CHF, COPD, and Alzheimers.
+#The fewest prescriptions are Cancer (-), Osteoporosos, and Strketia
+
+
+summary(lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+                    ,data=PDP_2010_WD))
+
+#I do like the data/coefficients I get from having the comorbidities broken out like this.
+
+#Ok, should I do anything else with poisson before I forget what I was doing?
+
+
+
+
+
