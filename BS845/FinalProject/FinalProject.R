@@ -216,7 +216,32 @@ summary(lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+C
 
 #I do like the data/coefficients I get from having the comorbidities broken out like this.
 
+#~~~~~~~~~~~~~~~~
 #Ok, should I do anything else with poisson before I forget what I was doing?
+#While looking for how to do poisson transformations...
+#Found some info about quasi poisson
+mod_quasipoisson2<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                    BENE_SEX_IDENT_CD+log(BENE_AGE_CAT_CD)+
+                    CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                    CC_2_OR_MORE+DUAL_STUS+
+                    log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                    log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)+log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
+                  ,family=quasipoisson,data=PDP_2010_WD)
+
+mod_quasipoisson_justpay<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                           log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+
+                           log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)
+                         ,family=quasipoisson,data=PDP_2010_WD);
+
+mod_quasipoisson_justvisit<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                             log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                             log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
+                           ,family=quasipoisson,data=PDP_2010_WD)
+
+
+
+#Yeah, this is totally linear - giving up on poisson and finishing the analysis.
+
 
 
 
