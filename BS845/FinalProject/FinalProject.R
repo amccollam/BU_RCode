@@ -105,15 +105,17 @@ plot(PDP_2010,panel=panel.smooth)
 
 #~~~~~~~~~~~~~~~~~Meeting with Prof~~~~~~~~~~~~~
 #Rounded total RX col added
+attach(PDP_2010)
 PDP_2010_WD$TotRx<- (BENE_COUNT_PD_EQ_12 * AVE_PDE_PD_EQ_12)
 PDP_2010_WD$TotRxRound<- round(PDP_2010_WD$TotRx, digits=0)
+detach()
 
 #model built with prof
 mod_prof<-glm(TotRxRound~BENE_COUNT_PD_EQ_12+CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_COPD, family=poisson, data=PDP_2010_WD)
 #~~~~~~~~~~~~~~~~Complete~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #Trying with comorbidities only (with bene count)
-mod_comorbid<-glm(TotRxRound~log(BENE_COUNT_PD_EQ_12)+CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+mod_comorbid<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
               , family=poisson, data=PDP_2010_WD)
 #using the log() of Bene count gives a better model than not
 #Comorbidities all highly significant with and wihtout log(bene), but comorbid coefficients go in the right direction (i.e. positively corrleate) once the log is taken.
@@ -123,4 +125,63 @@ mod_offsettest<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
                     CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
                     ,family=poisson,data=PDP_2010_WD)
 #This worked really well!!!!  Coefficients in the right directions!!!!
+
+#Ok, making a model with all covariates and seeing what happens.
+#prof says continuous variables need log transformation with poisson.
+#I'm not sure about adding bene counts for Parts A, B, and C, no matter how predictive.
+#I'm going to leave those out.  They correlate with Part D bene count which is definitely going in there already.
+
+mod_poisson1<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                  BENE_SEX_IDENT_CD+log(BENE_AGE_CAT_CD)+
+                  CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                  CC_2_OR_MORE+DUAL_STUS+
+                  log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                  log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)+log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)+
+                  log(AVE_PDE_CST_PD_EQ_12)
+                  ,family=poisson,data=PDP_2010_WD)
+
+#Ok, now let's see about using drop1() to make this better.
+drop1(mod_poisson1,test="Chisq")
+
+#This didn't drop anything.
+#Yeah...  I'm getting rid of cost of drugs - this corrlates *too* well.
+mod_poisson2<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                    BENE_SEX_IDENT_CD+log(BENE_AGE_CAT_CD)+
+                    CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA+
+                    CC_2_OR_MORE+DUAL_STUS+
+                    log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                    log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)+log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
+                  ,family=poisson,data=PDP_2010_WD)
+
+#This made fit worse, not sure if that's a bad thing.
+#trying drop1() again
+#All variables still *highly* correlated.  Deviance even worse than before, no drops improve AIC.
+#I want to compare pay vs. visit/days/admission.  Should not have both of these I don't think.
+#Going to try the model with just pay with model with just visits.
+mod_poisson_justpay<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                  log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+
+                  log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)
+                  ,family=poisson,data=PDP_2010_WD);
+
+mod_poisson_justvisit<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                  log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
+                  log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
+                  ,family=poisson,data=PDP_2010_WD)
+
+#mod_poisson_justpay has lower deviance and lower AIC than mod_poisson_justvisit, although it also has more variables.
+#mod_comorbid looks very similar, with quality somewhere in between (although all 3 models are terrible fits)
+
+mod_poisson_justdemographics_nolog<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                   BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD
+                   ,family=poisson,data=PDP_2010_WD)
+
+#still shit.
+#Let's check out this overdispersion thing graphically
+scatter.smooth(log(fitted(mod_poisson2)),log((PDP_2010_WD$TotRxRound-fitted(mod_poisson2))^2),xlab=expression(hat(mu))
+               , ylab=expression(sigma^2==(y-hat(mu))^2))
+abline(0,1,lty=2)
+
+#Why isn't this working?  Oh, fitted values for glm exclude NA by default.  This causes error in TotRxRound-fitted()
+#length(PDP_2010_WD$TotRxRound)=16699, length(fitted(mod_poisson2)) = 12043
+
 
