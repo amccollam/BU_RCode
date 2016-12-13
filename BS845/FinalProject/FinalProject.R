@@ -103,9 +103,24 @@ summary(modp1)
 plot(PDP_2010,panel=panel.smooth)
 #data too big - this would need to be broken out.  Not even sure if it's necessary...
 
+#~~~~~~~~~~~~~~~~~Meeting with Prof~~~~~~~~~~~~~
 #Rounded total RX col added
 PDP_2010_WD$TotRx<- (BENE_COUNT_PD_EQ_12 * AVE_PDE_PD_EQ_12)
 PDP_2010_WD$TotRxRound<- round(PDP_2010_WD$TotRx, digits=0)
 
 #model built with prof
 mod_prof<-glm(TotRxRound~BENE_COUNT_PD_EQ_12+CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_COPD, family=poisson, data=PDP_2010_WD)
+#~~~~~~~~~~~~~~~~Complete~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#Trying with comorbidities only (with bene count)
+mod_comorbid<-glm(TotRxRound~log(BENE_COUNT_PD_EQ_12)+CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+              , family=poisson, data=PDP_2010_WD)
+#using the log() of Bene count gives a better model than not
+#Comorbidities all highly significant with and wihtout log(bene), but comorbid coefficients go in the right direction (i.e. positively corrleate) once the log is taken.
+#Not great models yet, but at least they're working now.  
+
+mod_offsettest<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
+                    CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
+                    ,family=poisson,data=PDP_2010_WD)
+#This worked really well!!!!  Coefficients in the right directions!!!!
+
