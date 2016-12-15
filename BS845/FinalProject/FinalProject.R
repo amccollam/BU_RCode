@@ -175,11 +175,18 @@ mod_poisson_justdemographics_nolog<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_1
                    BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD
                    ,family=poisson,data=PDP_2010_WD)
 
-#still shit.
+#still no good.
 #Let's check out this overdispersion thing graphically
 scatter.smooth(log(fitted(mod_poisson2)),log((PDP_2010_WD$TotRxRound-fitted(mod_poisson2))^2),xlab=expression(hat(mu))
                , ylab=expression(sigma^2==(y-hat(mu))^2))
 abline(0,1,lty=2)
+
+#No luck, running a pearson statistic to measure overdisperison.
+phi<- sum(resid(mod_poisson2, type = "pearson")^2)/df.residual(mod_poisson2);
+phi_justdemo<- sum(resid(mod_poisson_justdemographics_nolog, type = "pearson")^2)/df.residual(mod_poisson_justdemographics_nolog);
+phi_justpay<- sum(resid(mod_poisson_justpay, type = "pearson")^2)/df.residual(mod_poisson_justpay);
+phi_justvisit<- sum(resid(mod_poisson_justvisit, type = "pearson")^2)/df.residual(mod_poisson_justvisit)
+phi_justvisit<- sum(resid(mod_poisson_justvisit, type = "pearson")^2)/df.residual(mod_poisson)
 
 #Why isn't this working?  Oh, fitted values for glm exclude NA by default.  This causes error in TotRxRound-fitted()
 #length(PDP_2010_WD$TotRxRound)=16699, length(fitted(mod_poisson2)) = 12043
@@ -214,6 +221,8 @@ mod_lm_comorbid<-lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CANCER+CC_CHF+CC_CHRNKIDN+CC
 summary(lm(AVE_PDE_PD_EQ_12~CC_ALZHDMTA+CC_CHF+CC_CHRNKIDN+CC_COPD+CC_DEPRESSN+CC_DIABETES+CC_ISCHMCHT+CC_OSTEOPRS+CC_RA_OA+CC_STRKETIA
                     ,data=PDP_2010_WD))
 
+
+
 #I do like the data/coefficients I get from having the comorbidities broken out like this.
 
 #~~~~~~~~~~~~~~~~
@@ -226,7 +235,7 @@ mod_quasipoisson2<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
                     CC_2_OR_MORE+DUAL_STUS+
                     log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+log(AVE_IP_ADM_PA_EQ_12)+log(AVE_SNF_DAYS_PA_EQ_12)+
                     log(AVE_PB_PAY_PB_EQ_12)+log(AVE_CA_PAY_PB_EQ_12)+log(AVE_OP_PAY_PB_EQ_12)+log(AVE_OTH_PAY_PB_EQ_12)+log(AVE_CA_VST_PB_EQ_12)+log(AVE_OP_VST_PB_EQ_12)
-                  ,family=quasipoisson,data=PDP_2010_WD)
+                  ,family=quasipoisson(link="log"),data=PDP_2010_WD)
 
 mod_quasipoisson_justpay<-glm(TotRxRound~offset(log(BENE_COUNT_PD_EQ_12))+
                            log(AVE_PA_PAY_PA_EQ_12)+log(AVE_IP_PAY_PA_EQ_12)+log(AVE_SNF_PAY_PA_EQ_12)+log(AVE_OTH_PAY_PA_EQ_12)+
@@ -272,7 +281,7 @@ mod_linear2<-lm(AVE_PDE_PD_EQ_12~BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD+
 
 #Running stepAIC on it
 
-mod_linear2_step<-stepAIC(lm(AVE_PDE_PD_EQ_12~., data=PDP_2010),direction="both")
+mod_linear2_step<-stepAIC(lm(AVE_PDE_PD_EQ_12~.-AVE_PDE_CST_PD_EQ_12-BENE_COUNT_PD_EQ_12-BENE_COUNT_PC_EQ_12-BENE_COUNT_PB_EQ_12-BENE_COUNT_PA_EQ_12, data=PDP_2010),direction="both",na.rm=T)
 mod_linear2_step$anova
 summary(mod_linear2_step)
 
@@ -284,10 +293,17 @@ mod_linear2_step2<-stepAIC(lm(AVE_PDE_PD_EQ_12~BENE_SEX_IDENT_CD+BENE_AGE_CAT_CD
                 data=PDP_2010),direction = "both")
 summary(mod_linear2_step2)
 
+mod_linear2_step2$anova
+
+par(mfrow=c(2,2));
+plot(mod_linear2_step2)
+
 #apparently there's a command called getDeltaRsquare() which I forgot about in rockchalk packate
 getDeltaRsquare(mod_linear2_step2)
 getDeltaRsquare(mod_lm_comorbid)
 #everything is more influential on R2 in comorbid model.  I think linear2_step2 has too many predictors.
+
+bptest(mod_linear2_step2)
 
 #Getting rid of unwanted predictors.  
 #Unfortunately, -BENE_COUNT_PC_EQ_12 has null values and is breaking things when I try to take it out.
@@ -301,8 +317,23 @@ mod_lm_construct_best<-lm(AVE_PDE_PD_EQ_12~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZ
 summary(mod_lm_construct_best)
 getDeltaRsquare(mod_lm_construct_best)
 plot(mod_lm_construct_best)
+#Testing heteroscedasticity
+library("lmtest", lib.loc="/Library/Frameworks/R.framework/Versions/3.3/Resources/library")
+bptest(mod_lm_construct_best)
 
+plot(lm((AVE_PDE_PD_EQ_12)^2~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+#this one throws everything out of whack
 
+plot(lm(sqrt(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+bptest(lm(sqrt(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+#this ain't bad.  Still heteroscedastic
+
+plot(lm(log(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+bptest(lm(log(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+#not bad eihter.  Still heteroscedastic.
+
+plot(lm(exp(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
+bptest(lm(exp(AVE_PDE_PD_EQ_12)~CC_DEPRESSN+CC_DIABETES+CC_CHF+CC_ALZHDMTA+CC_COPD+CC_RA_OA+CC_ISCHMCHT+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD))
 
 #Now this is intesting...  took the exponential of the outcome and there are some strange effects
 #especially due to obs 3666 (173.5) and 8104 (174.7)
@@ -327,3 +358,18 @@ influence.measures(mod_lm_construct_best)
 [1] 0.5777349
 > kurtosis(AVE_PDE_PD_EQ_12)
 [1] -0.1198344
+
+#Found a better way to test correlation than the graphs
+All_Cor<-cor(PDP_2010_WD, use="complete.obs")
+View(All_Cor)
+write.table(All_Cor, file="All_Cor.csv",quote=F, sep=",", na="", row.names=T)
+
+
+summary(mod_lm_construct_exp)
+#This is not a good model.  R2=0.001823
+mod_lm_construct_exp_Totcomorbid<-lm(exp(AVE_PDE_PD_EQ_12)~TotComorbid+sqrt(AVE_IP_ADM_PA_EQ_12)+DUAL_STUS, data=PDP_2010_WD)
+summary(mod_lm_construct_exp_Totcomorbid)
+
+#trying sandwich test with previous constructed 10-factor model.
+coeftest(mod_lm_construct_best)
+summary(mod_lm_construct_best)
